@@ -209,18 +209,10 @@ h2.display { font-size: var(--step-4); }
   position: fixed;
   inset: 0 0 auto 0;
   z-index: var(--z-sticky);
-  color: var(--on-dark);
+  color: var(--ink);
   transition: background-color 0.4s, box-shadow 0.4s, color 0.4s;
 }
-.nav::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 -60% 0;
-  background: linear-gradient(to bottom, oklch(0.16 0.05 270 / 0.85) 0%, oklch(0.16 0.05 270 / 0.7) 60%, transparent 100%);
-  opacity: 1;
-  transition: opacity 0.4s;
-  pointer-events: none;
-}
+.nav::before { content: none; }
 .nav.is-scrolled {
   background: oklch(1 0 0 / 0.92);
   backdrop-filter: blur(12px);
@@ -257,16 +249,20 @@ h2.display { font-size: var(--step-4); }
   text-decoration: none;
 }
 .brand__mark {
-  width: 124px;
-  height: 80px;
-  padding: 4px 8px;
-  background: #fff;
-  border-radius: 4px;
+  width: 112px;
+  height: 60px;
   object-fit: contain;
   flex: none;
 }
+.footer .brand__mark, .menu .brand__mark {
+  padding: 4px 8px;
+  background: #fff;
+  border-radius: 4px;
+}
 @media (max-width: 899px) {
-  .brand__mark { width: 96px; height: 62px; padding: 3px 6px; }
+  .brand__mark { width: 76px; height: 42px; }
+  .brand__name { font-size: 1.1rem; white-space: nowrap; }
+  .brand__name small { font-size: 0.62rem; }
 }
 .brand__name {
   font-family: var(--font-display);
@@ -381,7 +377,7 @@ h2.display { font-size: var(--step-4); }
 .menu__close-btn { position: absolute; top: 14px; right: var(--gutter); color: var(--on-dark); }
 
 /* -------------------------------------------------------------------------- */
-/* Hero                                                                       */
+/* Hero (claro, con escena del logo)                                          */
 /* -------------------------------------------------------------------------- */
 
 .hero {
@@ -389,40 +385,32 @@ h2.display { font-size: var(--step-4); }
   min-height: 100svh;
   display: grid;
   grid-template-rows: 1fr auto;
-  color: var(--on-dark);
-  background: var(--blue-950);
+  color: var(--ink);
+  background:
+    radial-gradient(ellipse 55% 60% at 78% 45%, oklch(0.95 0.025 270) 0%, transparent 70%),
+    var(--bg);
   overflow: hidden;
   isolation: isolate;
-}
-.hero__media {
-  position: absolute;
-  inset: -12% 0;
-  z-index: -1;
-}
-.hero__media img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-  object-position: 55% 50%;
-  transform-origin: center;
-}
-.hero__media::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(to top, oklch(0.16 0.05 270 / 0.95) 0%, oklch(0.16 0.05 270 / 0.55) 45%, oklch(0.16 0.05 270 / 0.25) 100%),
-    linear-gradient(to right, oklch(0.16 0.05 270 / 0.6), transparent 70%);
 }
 
 .hero__body {
   position: relative;
   width: var(--container);
   margin-inline: auto;
-  padding-top: calc(var(--nav-h) + clamp(3rem, 10vh, 7rem));
-  padding-bottom: clamp(2.5rem, 6vh, 4rem);
+  padding-top: calc(76px + clamp(1.5rem, 4vh, 3rem));
+  padding-bottom: clamp(2rem, 5vh, 3.5rem);
   display: grid;
-  align-content: end;
-  gap: clamp(1.5rem, 3vw, 2.5rem);
+  gap: clamp(1.5rem, 4vw, 3rem);
+  align-items: center;
+  align-content: center;
+}
+@media (min-width: 960px) {
+  .hero__body { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); }
+}
+
+.hero__copy {
+  display: grid;
+  gap: clamp(1.25rem, 2.5vw, 2rem);
 }
 
 .hero__kicker {
@@ -434,7 +422,7 @@ h2.display { font-size: var(--step-4); }
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--amber);
+  color: var(--blue-600);
 }
 .hero__kicker::before {
   content: "";
@@ -448,13 +436,13 @@ h2.display { font-size: var(--step-4); }
 }
 .hero h1 .line { display: block; overflow: hidden; }
 .hero h1 .line > span { display: inline-block; }
-.hero h1 em { font-style: normal; color: var(--amber); }
+.hero h1 em { font-style: normal; color: var(--blue-600); }
 
 .hero__lede {
   font-size: var(--step-1);
   line-height: 1.45;
-  max-width: 54ch;
-  color: var(--on-dark-muted);
+  max-width: 48ch;
+  color: var(--muted);
 }
 
 .hero__actions {
@@ -467,16 +455,85 @@ h2.display { font-size: var(--step-4); }
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem 2rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid oklch(1 0 0 / 0.2);
+  margin: 0; padding: 1.25rem 0 0;
+  list-style: none;
+  border-top: 1px solid var(--line);
   font-family: var(--font-display);
   font-size: 1.05rem;
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--on-dark-muted);
+  color: var(--muted);
 }
-.hero__meta strong { color: var(--on-dark); font-weight: 700; }
+.hero__meta strong { color: var(--ink); font-weight: 700; }
+
+/* Escena del logo: capas con profundidad */
+.scene {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1336 / 721;
+  perspective: 1400px;
+}
+@media (max-width: 959px) {
+  .scene { order: -1; max-height: 40svh; margin-inline: auto; }
+}
+.scene__stage {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.scene__layer {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+.scene__layer img {
+  width: 100%; height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 18px 28px oklch(0.30 0.10 270 / 0.28));
+}
+.scene__layer--globe img { filter: drop-shadow(0 22px 40px oklch(0.44 0.15 270 / 0.30)); }
+
+/* Globo: brillo que recorre la esfera (centro 66.4% / 48.1%, radio 19.1% del ancho) */
+.scene__gloss {
+  position: absolute;
+  left: calc(66.4% - 19.1%);
+  top: calc(48.1% - 19.1% * 1336 / 721);
+  width: 38.2%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  overflow: hidden;
+  pointer-events: none;
+  mix-blend-mode: soft-light;
+}
+.scene__gloss::before {
+  content: "";
+  position: absolute;
+  inset: -20% -60%;
+  background: linear-gradient(100deg, transparent 35%, oklch(1 0 0 / 0.9) 50%, transparent 65%);
+  transform: translateX(var(--gx, -70%));
+}
+.scene__gloss { --gx: -70%; }
+
+/* Carretera bajo las ruedas */
+.scene__road {
+  position: absolute;
+  left: 2%; right: 2%;
+  top: 96.5%;
+  height: 3px;
+  background-image: linear-gradient(to right, var(--blue-200) 0 55%, transparent 55% 100%);
+  background-size: 48px 3px;
+  border-radius: 2px;
+  opacity: 0.9;
+}
+
+.scene__orbit {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+}
 
 /* Marquee de ruta */
 .route-marquee {

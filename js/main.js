@@ -141,36 +141,165 @@
     }
   });
 
+  /* ------------------------------------------------------- Esfera 3D (canvas) */
+  // Malla de meridianos y paralelos proyectada en perspectiva, centrada en el globo del logo.
+  function startOrbit({ animate }) {
+    const canvas = document.getElementById('orbit');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const CX = 0.664, CY = 0.481, R = 0.191 * 1.22;   // centro y radio relativos al ancho de la escena
+    const TILT = (23 * Math.PI) / 180;
+    let w = 0, h = 0, dpr = 1, angle = 0, raf = 0, visible = true, last = performance.now();
+
+    const resize = () => {
+      const r = canvas.getBoundingClientRect();
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = Math.round(r.width); h = Math.round(r.height);
+      canvas.width = w * dpr; canvas.height = h * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      draw();
+    };
+
+    // proyecta un punto de la esfera unitaria rotado por `angle` alrededor de Y y con inclinación TILT en X
+    const project = (lat, lon) => {
+      let x = Math.cos(lat) * Math.sin(lon);
+      let y = Math.sin(lat);
+      let z = Math.cos(lat) * Math.cos(lon);
+      const ca = Math.cos(angle), sa = Math.sin(angle);
+      [x, z] = [x * ca + z * sa, -x * sa + z * ca];
+      const ct = Math.cos(TILT), st = Math.sin(TILT);
+      [y, z] = [y * ct - z * st, y * st + z * ct];
+      const persp = 1 / (1 + z * 0.18);
+      return { x: x * persp, y: y * persp, z };
+    };
+
+    const strokePath = (pts) => {
+      const cx = w * CX, cy = h * CY, r = w * R;
+      let open = false;
+      for (const p of pts) {
+        // sólo el hemisferio frontal, más nítido al centro
+        if (p.z > -0.05) {
+          if (!open) { ctx.beginPath(); open = true; ctx.moveTo(cx + p.x * r, cy - p.y * r); }
+          else ctx.lineTo(cx + p.x * r, cy - p.y * r);
+        } else if (open) { ctx.stroke(); open = false; }
+      }
+      if (open) ctx.stroke();
+    };
+
+    function draw() {
+      ctx.clearRect(0, 0, w, h);
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'oklch(0.44 0.15 270 / 0.38)';
+      const STEPS = 72;
+      for (let m = 0; m < 12; m++) {                       // meridianos cada 30°
+        const lon = (m * Math.PI) / 6;
+        const pts = [];
+        for (let i = 0; i <= STEPS; i++) pts.push(project(-Math.PI / 2 + (i / STEPS) * Math.PI, lon));
+        strokePath(pts);
+      }
+      for (let k = -2; k <= 2; k++) {                      // paralelos cada 30°
+        const lat = (k * Math.PI) / 6;
+        const pts = [];
+        for (let i = 0; i <= STEPS; i++) pts.push(project(lat, (i / STEPS) * Math.PI * 2));
+        strokePath(pts);
+      }
+      // contorno exterior
+      ctx.strokeStyle = 'oklch(0.44 0.15 270 / 0.26)';
+      ctx.beginPath(); ctx.arc(w * CX, h * CY, w * R, 0, Math.PI * 2); ctx.stroke();
+    }
+
+    const tick = (now) => {
+      const dt = Math.min((now - last) / 1000, 0.05); last = now;
+      if (visible) { angle += dt * 0.22; draw(); }
+      raf = requestAnimationFrame(tick);
+    };
+
+    new ResizeObserver(resize).observe(canvas);
+    resize();
+    if (!animate) return;
+    new IntersectionObserver(([e]) => { visible = e.isIntersecting; }).observe(canvas);
+    raf = requestAnimationFrame(tick);
+  }
+
   /* ------------------------------------------------------------- Movimiento */
   if (!hasGsap || reduceMotion) {
     // Estado final sin animar: la línea del corredor completa.
     document.getElementById('route')?.style.setProperty('--progress', '1');
+    startOrbit({ animate: false });
     return;
   }
 
   gsap.registerPlugin(ScrollTrigger);
   gsap.defaults({ ease: 'expo.out', duration: 1 });
 
-  /* Hero: coreografía de carga */
-  const heroTl = gsap.timeline({ delay: 0.15 });
-  heroTl
-    .from('.hero__media img', { scale: 1.12, duration: 2.2, ease: 'power2.out' }, 0)
-    .from('[data-hero="kicker"]', { y: 16, autoAlpha: 0, duration: 0.8 }, 0.2)
-    .from('.hero h1 .line > span', { yPercent: 110, duration: 1.1, stagger: 0.09 }, 0.3)
-    .from('[data-hero="lede"]', { y: 24, autoAlpha: 0, duration: 0.9 }, 0.75)
-    .from('[data-hero="actions"] .btn', { y: 20, autoAlpha: 0, duration: 0.8, stagger: 0.08 }, 0.9)
-    .from('[data-hero="meta"] li', { y: 12, autoAlpha: 0, duration: 0.7, stagger: 0.06 }, 1.05)
-    .from('.route-marquee', { yPercent: 100, duration: 0.9 }, 0.9)
-    .from('.nav__inner', { y: -12, autoAlpha: 0, duration: 0.8 }, 0.4);
+  /* Hero: coreografía de carga — el camión entra rodando y el globo se posa sobre la plataforma */
+  const stage = document.getElementById('sceneStage');
+  const truck = document.querySelector('.scene__layer--truck');
+  const globe = document.querySelector('.scene__layer--globe');
+  const road = document.querySelector('.scene__road');
 
-  /* Hero: parallax suave de la foto (se omite en dispositivos lentos) */
-  if (!lowEnd) {
-    gsap.to('.hero__media img', {
-      yPercent: 14,
-      ease: 'none',
-      scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true },
+  const heroTl = gsap.timeline({ delay: 0.1 });
+  heroTl
+    .from('.nav__inner', { y: -12, autoAlpha: 0, duration: 0.8 }, 0)
+    .from('[data-hero="kicker"]', { y: 16, autoAlpha: 0, duration: 0.8 }, 0.15)
+    .from('.hero h1 .line > span', { yPercent: 110, duration: 1.1, stagger: 0.09 }, 0.25)
+    .from('[data-hero="lede"]', { y: 24, autoAlpha: 0, duration: 0.9 }, 0.7)
+    .from('[data-hero="actions"] .btn', { y: 20, autoAlpha: 0, duration: 0.8, stagger: 0.08 }, 0.85)
+    .from('[data-hero="meta"] li', { y: 12, autoAlpha: 0, duration: 0.7, stagger: 0.06 }, 1.0)
+    .from('.route-marquee', { yPercent: 100, duration: 0.9 }, 0.9)
+    // escena
+    .from(road, { scaleX: 0, transformOrigin: 'left center', duration: 1.2, ease: 'power2.out' }, 0.2)
+    .from(truck, { xPercent: -70, autoAlpha: 0, duration: 2.1, ease: 'power3.out' }, 0.25)
+    .fromTo(road, { backgroundPositionX: '0px' }, { backgroundPositionX: '-480px', duration: 2.1, ease: 'power3.out' }, 0.25)
+    .from(globe, { y: -40, scale: 0.86, autoAlpha: 0, transformOrigin: '66% 50%', duration: 1.5 }, 0.9)
+    .from('#orbit', { autoAlpha: 0, duration: 1.2 }, 1.4);
+
+  /* Escena en reposo: el globo flota y un brillo recorre la esfera */
+  gsap.to(globe, { y: -7, duration: 3.4, yoyo: true, repeat: -1, ease: 'sine.inOut', delay: 2.4 });
+  const glossTl = gsap.timeline({ repeat: -1, repeatDelay: 3.2, delay: 2.6 });
+  glossTl.fromTo('.scene__gloss', { '--gx': '-70%' }, { '--gx': '70%', duration: 2.4, ease: 'sine.inOut' });
+
+  /* Profundidad: inclinación con el puntero (escritorio) o con el scroll (táctil) */
+  const hero = document.querySelector('.hero');
+  const layers = [
+    { el: truck, depth: 16 },
+    { el: globe, depth: 8 },
+    { el: document.getElementById('orbit'), depth: -22 },
+  ];
+  const rotX = gsap.quickTo(stage, 'rotationX', { duration: 0.9, ease: 'power3.out' });
+  const rotY = gsap.quickTo(stage, 'rotationY', { duration: 0.9, ease: 'power3.out' });
+  const movers = layers.map((l) => ({
+    x: gsap.quickTo(l.el, 'x', { duration: 0.9, ease: 'power3.out' }),
+    y: gsap.quickTo(l.el, 'y', { duration: 0.9, ease: 'power3.out' }),
+    depth: l.depth,
+  }));
+  const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  if (finePointer) {
+    hero.addEventListener('pointermove', (e) => {
+      const r = hero.getBoundingClientRect();
+      const nx = ((e.clientX - r.left) / r.width) * 2 - 1;   // -1 … 1
+      const ny = ((e.clientY - r.top) / r.height) * 2 - 1;
+      rotY(nx * 7);
+      rotX(-ny * 5);
+      movers.forEach((m) => { m.x(nx * m.depth); m.y(ny * m.depth * 0.6); });
+    });
+    hero.addEventListener('pointerleave', () => {
+      rotY(0); rotX(0);
+      movers.forEach((m) => { m.x(0); m.y(0); });
+    });
+  } else {
+    gsap.to(stage, {
+      rotationX: -6, yPercent: -6, ease: 'none',
+      scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true },
+    });
+    gsap.to(truck, {
+      x: 40, ease: 'none',
+      scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true },
     });
   }
+
+  /* Esfera de alambre en 3D detrás del globo del logo */
+  startOrbit({ animate: true });
 
   /* Reveals: cada tipo con su propio gesto */
   document.querySelectorAll('[data-reveal="lines"]').forEach((el) => {

@@ -9,8 +9,8 @@
   <meta property="og:title" content="Terminales Latinas, S.A. — Transporte pesado en Centroamérica">
   <meta property="og:description" content="Tu carga cruza Centroamérica. Nosotros la llevamos. Transporte de carga pesada con monitoreo 24/7 y certificación BASC.">
   <meta property="og:type" content="website">
-  <meta property="og:image" content="https://images.unsplash.com/photo-1766785368863-f2188a8c8b32?auto=format&fit=crop&w=1200&q=80">
-  <link rel="icon" href="assets/logo.jpg">
+  <meta property="og:image" content="assets/logo-src.png">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,7 +26,7 @@
 <header class="nav" id="nav">
   <div class="container nav__inner">
     <a class="brand" href="#inicio" aria-label="Terminales Latinas, inicio">
-      <img class="brand__mark" src="assets/logo.jpg" alt="" width="124" height="80">
+      <img class="brand__mark" src="assets/logo-full.webp" alt="" width="1336" height="721">
       <span class="brand__name">Terminales Latinas<small>Transporte pesado · Guatemala</small></span>
     </a>
 
@@ -69,41 +69,46 @@
 
 <!-- ============================== HERO ============================== -->
 <section class="hero" id="inicio">
-  <div class="hero__media" data-parallax>
-    <img
-      src="https://images.unsplash.com/photo-1766785368863-f2188a8c8b32?auto=format&fit=crop&w=1600&q=80"
-      srcset="https://images.unsplash.com/photo-1766785368863-f2188a8c8b32?auto=format&fit=crop&w=800&q=75 800w,
-              https://images.unsplash.com/photo-1766785368863-f2188a8c8b32?auto=format&fit=crop&w=1600&q=80 1600w,
-              https://images.unsplash.com/photo-1766785368863-f2188a8c8b32?auto=format&fit=crop&w=2400&q=80 2400w"
-      sizes="100vw"
-      alt="Dos furgones en convoy por una carretera de montaña al amanecer"
-      fetchpriority="high" decoding="async">
-  </div>
-
   <div class="hero__body">
-    <p class="hero__kicker" data-hero="kicker">Transporte terrestre de carga · Guatemala → Panamá</p>
-    <h1 data-hero="title">
-      <span class="line"><span>Tu carga cruza</span></span>
-      <span class="line"><span>Centroamérica.</span></span>
-      <span class="line"><span><em>Nosotros la llevamos.</em></span></span>
-    </h1>
-    <p class="hero__lede" data-hero="lede">Transportamos tu carga de forma rápida, eficiente y segura: furgones de 48' y 53', camiones de 10 toneladas, tránsito aduanero en seis países y un centro de monitoreo que no cierra.</p>
-    <div class="hero__actions" data-hero="actions">
-      <a class="btn btn--amber" href="#cotizar">
-        Cotizar transporte
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-      </a>
-      <a class="btn btn--ghost-light" href="tel:+50224130808">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>
-        2413-0808
-      </a>
+    <div class="hero__copy">
+      <p class="hero__kicker" data-hero="kicker">Transporte terrestre de carga · Guatemala → Panamá</p>
+      <h1 data-hero="title">
+        <span class="line"><span>Tu carga cruza</span></span>
+        <span class="line"><span>Centroamérica.</span></span>
+        <span class="line"><span><em>Nosotros la llevamos.</em></span></span>
+      </h1>
+      <p class="hero__lede" data-hero="lede">Transportamos tu carga de forma rápida, eficiente y segura: furgones de 48' y 53', camiones de 10 toneladas, tránsito aduanero en seis países y un centro de monitoreo que no cierra.</p>
+      <div class="hero__actions" data-hero="actions">
+        <a class="btn btn--amber" href="#cotizar">
+          Cotizar transporte
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a class="btn btn--ghost-dark" href="tel:+50224130808">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>
+          2413-0808
+        </a>
+      </div>
+      <ul class="hero__meta" data-hero="meta" role="list">
+        <li><strong>Certificada BASC</strong></li>
+        <li>Monitoreo <strong>24/7 · 365</strong></li>
+        <li><strong>6 países</strong>, 5 aduanas</li>
+        <li>Zona 18, <strong>Guatemala</strong></li>
+      </ul>
     </div>
-    <ul class="hero__meta" data-hero="meta" role="list">
-      <li><strong>Certificada BASC</strong></li>
-      <li>Monitoreo <strong>24/7 · 365</strong></li>
-      <li><strong>6 países</strong>, 5 aduanas</li>
-      <li>Zona 18, <strong>Guatemala</strong></li>
-    </ul>
+
+    <div class="scene" id="scene" role="img" aria-label="Logotipo de Terminales Latinas: cabezal azul con plataforma y un globo terráqueo con el continente americano">
+      <div class="scene__stage" id="sceneStage">
+        <canvas class="scene__orbit" id="orbit" aria-hidden="true"></canvas>
+        <div class="scene__layer scene__layer--globe" data-depth="8">
+          <img src="assets/logo-globe.webp" alt="" width="1336" height="721" fetchpriority="high" decoding="async">
+          <span class="scene__gloss" aria-hidden="true"></span>
+        </div>
+        <div class="scene__road" aria-hidden="true"></div>
+        <div class="scene__layer scene__layer--truck" data-depth="16">
+          <img src="assets/logo-truck.webp" alt="" width="1336" height="721" fetchpriority="high" decoding="async">
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="route-marquee" aria-hidden="true">
@@ -522,7 +527,7 @@
     <div class="footer__grid">
       <div>
         <a class="brand" href="#inicio">
-          <img class="brand__mark" src="assets/logo.jpg" alt="" width="124" height="80">
+          <img class="brand__mark" src="assets/logo-full.webp" alt="" width="1336" height="721">
           <span class="brand__name">Terminales Latinas<small>S.A. · Guatemala</small></span>
         </a>
         <p>Transporte terrestre de carga nacional e internacional. Certificada BASC. Monitoreo 24/7/365.</p>
